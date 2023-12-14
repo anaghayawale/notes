@@ -1,6 +1,10 @@
 {
     "cSpell.words": [
         "ARGB",
-        "RGBO"
-    ]
+        "dotenv",
+        "RGBO",
+        "SIGNIN",
+        "signup"
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
