@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../models/user.dart';
 import '../providers/loading_provider.dart';
+import '../providers/user_provider.dart';
+import '../screens/home_screen.dart';
 import '../utils/constants.dart';
 import '../utils/utils.dart';
 
@@ -43,6 +48,56 @@ class AuthServices{
           showSnackBar(context, 'Account created! Login with the same credentials', Constants.greenColor);
         }
       );
+    } catch(e){
+      showSnackBar(context, e.toString(), Constants.redColor);
+    } finally {
+      Provider.of<LoadingProvider>(context, listen: false).stopLoading();
+    }
+
+  }
+
+  //method to sign in user
+  void signInUser({
+    required BuildContext context,
+    required String email,
+    required String password,
+  }) async {
+
+    try{
+      
+      var userProvider = Provider.of<UserProvider>(context, listen: false);
+      final navigator = Navigator.of(context);
+      final User user = User(
+        id: '', 
+        name: '', 
+        email: email, 
+        password: password, 
+        token: ''
+      );
+
+      http.Response res = await http.post(
+        Uri.parse(dotenv.env['NODE_API_POST_SIGNIN']!),
+        body: user.toJson(),
+        headers: <String, String>{
+          'Content-Type': 'application/json'
+        }
+      );
+
+      // ignore: use_build_context_synchronously
+      httpErrorHandle(
+        context: context, 
+        response: res, 
+        onSuccess: (){
+          final storage = new FlutterSecureStorage();
+          userProvider.setUser(res.body);
+          storage.write(key: 'token', value: jsonDecode(res.body)['token']);
+          navigator.pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const HomeScreen(),)
+            , (route) => false);
+        }
+      );
+      
+
     } catch(e){
       showSnackBar(context, e.toString(), Constants.redColor);
     } finally {

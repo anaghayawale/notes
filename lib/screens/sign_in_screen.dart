@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:notes/screens/sign_up_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/loading_provider.dart';
+import '../services/auth_services.dart';
 import '../utils/constants.dart';
 import '../utils/custom_text_field.dart';
+import '../utils/utils.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -11,8 +15,9 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final AuthServices authServices = AuthServices();
 
 
   @override
@@ -23,7 +28,24 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void signInUser(){
-    
+
+    if( _emailController.text.isEmpty || _passwordController.text.isEmpty) { 
+      showSnackBar(context, 'Please fill all the fields', Constants.redColor);
+      return;
+    }
+    if(_passwordController.text.length < 6) { 
+      showSnackBar(context, 'Password must be at least 6 characters', Constants.redColor);
+      return;
+    }
+    if(!isValidEmail(_emailController.text)) {
+    showSnackBar(context, 'Please enter a valid email address', Constants.redColor);
+    return;
+    }
+    Provider.of<LoadingProvider>(context, listen: false).startLoading();
+    authServices.signInUser(
+      context: context, 
+      email: _emailController.text,
+      password: _passwordController.text);
   }
 
   @override
@@ -85,13 +107,21 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   child: TextButton(
                     onPressed: signInUser,
-                    child: Text(
-                      "Sign In",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Constants.whiteColor,
-                      ),
+                    child: Consumer<LoadingProvider>(
+                      builder: (context, value, child) {
+                        if(value.isLoading){
+                          return CircularProgressIndicator(color: Constants.whiteColor,);
+                        } else {
+                          return Text(
+                        "Sign In",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Constants.whiteColor,
+                        ),
+                      );
+                        }
+                      },
                     ),
                   ),
                 ),

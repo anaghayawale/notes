@@ -3,6 +3,8 @@
         "ARGB",
         "dotenv",
         "RGBO",
+        "SIGNIN",
         "signup"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
