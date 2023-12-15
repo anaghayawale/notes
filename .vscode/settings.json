@@ -1,10 +1,14 @@
 {
     "cSpell.words": [
         "ARGB",
+        "Cupertino",
+        "dateadded",
         "dotenv",
+        "fullscreen",
         "RGBO",
         "SIGNIN",
-        "signup"
+        "signup",
+        "userid"
     ],
     "java.configuration.updateBuildConfiguration": "interactive"
 }
