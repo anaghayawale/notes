@@ -32,7 +32,13 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
             color: Constants.yellowColor,
           ),
         ),
-        
+        actions: [
+          IconButton(
+            onPressed: () {
+              
+            }, 
+            icon: Icon(Icons.check, color: Constants.yellowColor),
+          ),],
       ),
       body: SafeArea(
         child: Padding(
