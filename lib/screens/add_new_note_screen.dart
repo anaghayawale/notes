@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:notes/models/note.dart';
+import 'package:notes/providers/notes_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
+import '../models/user.dart';
+import '../providers/user_provider.dart';
 import '../utils/constants.dart';
+import '../utils/utils.dart';
 
 class AddNewNoteScreen extends StatefulWidget {
   const AddNewNoteScreen({super.key});
@@ -11,14 +18,33 @@ class AddNewNoteScreen extends StatefulWidget {
 
 class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _noteController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
   FocusNode noteFocus = FocusNode();
 
   @override
   void dispose() {
     _titleController.dispose();
-    _noteController.dispose();
+    _contentController.dispose();
     super.dispose();
+  }
+
+  void addNewNote(){
+    if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+      showSnackBar(context, 'Title or content cannot be empty', Constants.redColor);
+      return;
+    }
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+    User currentUser = userProvider.user;
+
+    Note newNote = Note(
+      id: const Uuid().v1(),
+      userid: currentUser.id,
+      title: _titleController.text,
+      content: _contentController.text,
+      dateadded: DateTime.now(),
+    );
+    Provider.of<NotesProvider>(context,listen: false).addNote(newNote);
+    Navigator.pop(context);
   }
 
 
@@ -35,7 +61,7 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              
+              addNewNote();
             }, 
             icon: Icon(Icons.check, color: Constants.yellowColor),
           ),],
@@ -69,7 +95,7 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
               ),
               Expanded(
                 child: TextField(
-                  controller: _noteController,
+                  controller: _contentController,
                   focusNode: noteFocus,
                   maxLines: null,
                   style: const TextStyle(
