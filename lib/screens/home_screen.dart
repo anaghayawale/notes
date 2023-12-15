@@ -7,6 +7,7 @@ import 'package:notes/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import '../models/note.dart';
+import '../utils/custom_dialog_box.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,72 +31,107 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Constants.yellowColor,
             ),
           ),
+          backgroundColor: Constants.appBackgroundColor,
         ),
         body: SafeArea(
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2),
-            itemCount: notesProvider.notes.length,
-            itemBuilder: (context, index) {
-              Note currentNote = notesProvider.notes[index];
-              return Stack(children: [
-                Container(
-                  height: 220.0,
-                  width: 200.0,
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: 5.0, vertical: 5.0),
-                  padding: const EdgeInsets.fromLTRB(10.0, 12.0, 10.0, 12.0),
-                  decoration: BoxDecoration(
-                    color: Constants.whiteColor,
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        currentNote.title!,
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w600,
-                          color: Constants.blackColor,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2),
+              itemCount: notesProvider.notes.length,
+              itemBuilder: (context, index) {
+                Note currentNote = notesProvider.notes[index];
+                return GestureDetector(
+                  onTap: () {
+                    //Update note
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        fullscreenDialog: true,
+                        builder: (context) => AddNewNoteScreen(
+                          isUpdating: true,
+                          note: currentNote,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(
-                        height: 7.0,
+                    );
+                  },
+                  onLongPress: () {
+                    //delete
+                    //notesProvider.deleteNote(currentNote);
+                    showDialog(
+                        context: context,
+                        builder: (context) => CustomDialogBox(
+                              context: context,
+                              currentNote: currentNote,
+                              title: "Delete note",
+                              content:
+                                  "Are you sure you want to delete this note?",
+                              negativeButtonText: "Cancel",
+                              positiveButtonText: "Delete",
+                            ));
+                  },
+                  child: Stack(children: [
+                    Container(
+                      height: 220.0,
+                      width: 200.0,
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 5.0, vertical: 5.0),
+                      padding:
+                          const EdgeInsets.fromLTRB(10.0, 12.0, 10.0, 12.0),
+                      decoration: BoxDecoration(
+                        color: Constants.whiteColor,
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
-                      Text(
-                        currentNote.content!,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            currentNote.title!,
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w600,
+                              color: Constants.blackColor,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(
+                            height: 7.0,
+                          ),
+                          Text(
+                            currentNote.content!,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w400,
+                              color: Constants.greyTextColor,
+                            ),
+                            maxLines: 5,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(
+                            height: 5.0,
+                          )
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 15,
+                      left: 15,
+                      child: Text(
+                        DateFormat('MMMM d | h:mm a')
+                            .format(currentNote.dateadded!),
                         style: TextStyle(
                           fontSize: 14.0,
                           fontWeight: FontWeight.w400,
                           color: Constants.greyTextColor,
                         ),
-                        maxLines: 5,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(
-                        height: 5.0,
-                      )
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 15,
-                  left: 15,
-                  child: Text(
-                    DateFormat('MMMM d | h:mm a')
-                        .format(currentNote.dateadded!),
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w400,
-                      color: Constants.greyTextColor,
-                    ),
-                  ),
-                )
-              ]);
-            },
+                    )
+                  ]),
+                );
+              },
+            ),
           ),
         ),
         floatingActionButton: FloatingActionButton(
@@ -109,7 +145,9 @@ class _HomeScreenState extends State<HomeScreen> {
               context,
               CupertinoPageRoute(
                 fullscreenDialog: true,
-                builder: (context) => const AddNewNoteScreen(),
+                builder: (context) => const AddNewNoteScreen(
+                  isUpdating: false,
+                ),
               ),
             );
           },

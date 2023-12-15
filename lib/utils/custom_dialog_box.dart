@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:notes/utils/constants.dart';
+import 'package:provider/provider.dart';
+
+import '../models/note.dart';
+import '../providers/notes_provider.dart';
 
 class CustomDialogBox extends StatefulWidget {
+  final BuildContext context;
+  final Note? currentNote;
   final String title;
   final String content;
   final String positiveButtonText;
   final String negativeButtonText;
-  const CustomDialogBox({super.key, required this.title, required this.content, required this.positiveButtonText, required this.negativeButtonText});
+  const CustomDialogBox({super.key, required this.title, required this.content, required this.positiveButtonText, required this.negativeButtonText, this.currentNote, required this.context});
 
   @override
   State<CustomDialogBox> createState() => _CustomDialogBoxState();
@@ -15,6 +21,7 @@ class CustomDialogBox extends StatefulWidget {
 class _CustomDialogBoxState extends State<CustomDialogBox> {
   @override
   Widget build(BuildContext context) {
+    NotesProvider notesProvider = Provider.of<NotesProvider>(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
@@ -58,6 +65,12 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                   ),
                   child: TextButton(
                     onPressed: () {
+                      if(widget.currentNote != null)
+                      {
+                        Navigator.pop(context);
+                      } else {
+                        Navigator.pop(context, false);
+                      }
                     },
                     child: Text(
                       widget.negativeButtonText,
@@ -77,7 +90,23 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                   ),
                   child: TextButton(
                     onPressed: () {
-                      
+                      if(widget.currentNote != null)
+                      {
+                        if(widget.positiveButtonText == "Update")
+                        {
+                          notesProvider.updateNote(widget.currentNote!);
+                          Navigator.pop(context);
+                        }
+                        else if(widget.positiveButtonText == "Delete")
+                        {
+                          notesProvider.deleteNote(widget.currentNote!);
+                          Navigator.pop(context);
+                        }
+                        
+                      }
+                      else{
+                        Navigator.pop(context);
+                      }
                     },
                     child: Text(
                       widget.positiveButtonText,

@@ -7,10 +7,13 @@ import 'package:uuid/uuid.dart';
 import '../models/user.dart';
 import '../providers/user_provider.dart';
 import '../utils/constants.dart';
+import '../utils/custom_dialog_box.dart';
 import '../utils/utils.dart';
 
 class AddNewNoteScreen extends StatefulWidget {
-  const AddNewNoteScreen({super.key});
+  final bool isUpdating;
+  final Note? note;
+  const AddNewNoteScreen({super.key, required this.isUpdating, this.note});
 
   @override
   State<AddNewNoteScreen> createState() => _AddNewNoteScreenState();
@@ -28,12 +31,14 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
     super.dispose();
   }
 
-  void addNewNote(){
+  void addNewNote() {
     if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
-      showSnackBar(context, 'Title or content cannot be empty', Constants.redColor);
+      showSnackBar(
+          context, 'Title or content cannot be empty', Constants.redColor);
       return;
     }
-    UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
     User currentUser = userProvider.user;
 
     Note newNote = Note(
@@ -43,28 +48,61 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
       content: _contentController.text,
       dateadded: DateTime.now(),
     );
-    Provider.of<NotesProvider>(context,listen: false).addNote(newNote);
+    Provider.of<NotesProvider>(context, listen: false).addNote(newNote);
     Navigator.pop(context);
   }
 
+  void updateNote() {
+    if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+      showSnackBar(
+          context, 'Title or content cannot be empty', Constants.redColor);
+      return;
+    }
+    widget.note!.title = _titleController.text;
+    widget.note!.content = _contentController.text;
+    widget.note!.dateadded = DateTime.now();
+    showDialog(
+        context: context,
+        builder: (context) => CustomDialogBox(
+              context: context,
+              currentNote: widget.note!,
+              title: "Update note",
+              content: "Are you sure you want to update this note?",
+              negativeButtonText: "Cancel",
+              positiveButtonText: "Update",
+            ));
+    
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isUpdating) {
+      _titleController.text = widget.note!.title!;
+      _contentController.text = widget.note!.content!;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Constants.yellowColor,
-        title: Text("Add Note", style: TextStyle(
-            fontWeight: FontWeight.w400,
-            color: Constants.yellowColor,
-          ),
-        ),
         actions: [
+          if (widget.isUpdating)
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.ios_share, color: Constants.yellowColor),
+            ),
           IconButton(
-            onPressed: () {
-              addNewNote();
-            }, 
-            icon: Icon(Icons.check, color: Constants.yellowColor),
-          ),],
+            onPressed: () async {
+              widget.isUpdating ? updateNote() : addNewNote();
+            },
+            icon: widget.isUpdating
+                ? Icon(Icons.edit, color: Constants.yellowColor)
+                : Icon(Icons.check, color: Constants.yellowColor),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -73,9 +111,9 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
             children: [
               TextField(
                 controller: _titleController,
-                autofocus: true,
+                autofocus: (widget.isUpdating == true) ? false : true,
                 onSubmitted: (value) {
-                  if(value.isNotEmpty) {
+                  if (value.isNotEmpty) {
                     noteFocus.requestFocus();
                   }
                 },
@@ -110,7 +148,8 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
               ),
             ],
           ),
-        ),),
+        ),
+      ),
     );
   }
 }
