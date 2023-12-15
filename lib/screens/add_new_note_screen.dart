@@ -12,6 +12,7 @@ class AddNewNoteScreen extends StatefulWidget {
 class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
+  FocusNode noteFocus = FocusNode();
 
   @override
   void dispose() {
@@ -42,6 +43,9 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
                 controller: _titleController,
                 autofocus: true,
                 onSubmitted: (value) {
+                  if(value.isNotEmpty) {
+                    noteFocus.requestFocus();
+                  }
                 },
                 style: const TextStyle(
                   fontSize: 30.0,
@@ -60,6 +64,7 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
               Expanded(
                 child: TextField(
                   controller: _noteController,
+                  focusNode: noteFocus,
                   maxLines: null,
                   style: const TextStyle(
                     fontSize: 20.0,
