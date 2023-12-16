@@ -1,25 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:notes/services/api_services.dart';
 
 import '../models/note.dart';
+import '../models/user.dart';
 
 class NotesProvider with ChangeNotifier{
 
   List<Note> notes = [];
+  ApiService apiService = ApiService(); 
 
-  void addNote(Note note){
-    notes.add(note);
+  void addNote({
+    required BuildContext context,
+    required Note note,
+    required User user
+  }){
+    apiService.addNewNote(context: context, note: note, user: user);
     notifyListeners();
   }
 
-  void updateNote(Note note){
-    int indexOfNote = notes.indexOf(notes.firstWhere((element) => element.id == note.id));
-    notes[indexOfNote] = note;
-    notifyListeners();
-  }
+  // void updateNote({
+  //   required BuildContext context,
+  //   required Note note,
+  //   required User user
+  // }){
+  //   apiService.addNewNote(context: context, note: note, user: user);
+  //   notifyListeners();
+  // }
 
-  void deleteNote(Note note){
-    int indexOfNote = notes.indexOf(notes.firstWhere((element) => element.id == note.id));
-    notes.removeAt(indexOfNote);
+  void deleteNote({
+    required BuildContext context,
+    required Note note,
+    required User user
+  }){
+    apiService.deleteNote(context: context, note: note, user: user);
     notifyListeners();
   }
 }
