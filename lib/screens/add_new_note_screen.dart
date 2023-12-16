@@ -52,25 +52,29 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
     Navigator.pop(context);
   }
 
-  void updateNote() {
+  void updateNote() async {
     if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
       showSnackBar(
           context, 'Title or content cannot be empty', Constants.redColor);
       return;
     }
-    widget.note!.title = _titleController.text;
-    widget.note!.content = _contentController.text;
-    widget.note!.dateadded = DateTime.now();
-    showDialog(
+
+    bool confirmUpdate = await showDialog(
         context: context,
         builder: (context) => CustomDialogBox(
-              context: context,
-              currentNote: widget.note!,
               title: "Update note",
               content: "Are you sure you want to update this note?",
               negativeButtonText: "Cancel",
               positiveButtonText: "Update",
             ));
+    
+    if (confirmUpdate == true) {
+    widget.note!.title = _titleController.text;
+    widget.note!.content = _contentController.text;
+    widget.note!.dateadded = DateTime.now();
+    Provider.of<NotesProvider>(context, listen: false).updateNote(widget.note!);
+    Navigator.pop(context);
+  }
     
   }
 

@@ -6,13 +6,12 @@ import '../models/note.dart';
 import '../providers/notes_provider.dart';
 
 class CustomDialogBox extends StatefulWidget {
-  final BuildContext context;
   final Note? currentNote;
   final String title;
   final String content;
   final String positiveButtonText;
   final String negativeButtonText;
-  const CustomDialogBox({super.key, required this.title, required this.content, required this.positiveButtonText, required this.negativeButtonText, this.currentNote, required this.context});
+  const CustomDialogBox({super.key, required this.title, required this.content, required this.positiveButtonText, required this.negativeButtonText, this.currentNote,});
 
   @override
   State<CustomDialogBox> createState() => _CustomDialogBoxState();
@@ -92,20 +91,11 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     onPressed: () {
                       if(widget.currentNote != null)
                       {
-                        if(widget.positiveButtonText == "Update")
-                        {
-                          notesProvider.updateNote(widget.currentNote!);
-                          Navigator.pop(context);
-                        }
-                        else if(widget.positiveButtonText == "Delete")
-                        {
-                          notesProvider.deleteNote(widget.currentNote!);
-                          Navigator.pop(context);
-                        }
-                        
+                        notesProvider.deleteNote(widget.currentNote!);
+                        Navigator.pop(context);
                       }
                       else{
-                        Navigator.pop(context);
+                        Navigator.pop(context, true);
                       }
                     },
                     child: Text(

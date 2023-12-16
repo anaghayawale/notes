@@ -62,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     showDialog(
                         context: context,
                         builder: (context) => CustomDialogBox(
-                              context: context,
                               currentNote: currentNote,
                               title: "Delete note",
                               content:
