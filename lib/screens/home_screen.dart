@@ -7,6 +7,8 @@ import 'package:notes/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import '../models/note.dart';
+import '../models/user.dart';
+import '../providers/user_provider.dart';
 import '../utils/custom_dialog_box.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     NotesProvider notesProvider = Provider.of<NotesProvider>(context);
+    UserProvider userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
         backgroundColor: Constants.appBackgroundColor,
         appBar: AppBar(
@@ -34,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Constants.appBackgroundColor,
         ),
         body: SafeArea(
-          child: Padding(
+          child: (notesProvider.notes.isNotEmpty) ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -42,6 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: notesProvider.notes.length,
               itemBuilder: (context, index) {
                 Note currentNote = notesProvider.notes[index];
+                User currentUser = userProvider.user;
+                
                 return GestureDetector(
                   onTap: () {
                     //Update note
@@ -62,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     showDialog(
                         context: context,
                         builder: (context) => CustomDialogBox(
+                              currentUser: currentUser,
                               currentNote: currentNote,
                               title: "Delete note",
                               content:
@@ -131,7 +137,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-          ),
+          ) : const Center(
+                  child: Text(
+                    "No notes yet",
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black45,
+                    ),
+                  ),
+                )
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Constants.yellowColor,

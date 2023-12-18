@@ -93,8 +93,17 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                     onPressed: () {
                       if(widget.currentNote != null)
                       {
-                        notesProvider.deleteNote(context: context, note: widget.currentNote!, user: widget.currentUser!);
-                        Navigator.pop(context);
+                        if(widget.title == "Delete note")
+                        {
+                          notesProvider.deleteNote(note: widget.currentNote!, user: widget.currentUser!);
+                          Navigator.pop(context);
+                        } else if(widget.title == "Update note"){
+                          notesProvider.updateNote(
+                            note: widget.currentNote!,
+                            user: widget.currentUser!,
+                          );
+                          Navigator.pop(context);
+                        }
                       }
                       else{
                         Navigator.pop(context, true);

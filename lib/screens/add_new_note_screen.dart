@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notes/models/note.dart';
 import 'package:notes/providers/notes_provider.dart';
-import 'package:notes/services/api_services.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -24,7 +23,6 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   FocusNode noteFocus = FocusNode();
-  final ApiService apiService = ApiService();
 
   @override
   void dispose() {
@@ -50,43 +48,36 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
       content: _contentController.text,
       dateadded: DateTime.now(),
     );
-    Provider.of<NotesProvider>(context, listen: false).addNote(context: context, note: newNote, user: currentUser);
+    Provider.of<NotesProvider>(context, listen: false).addNote(note: newNote, user: currentUser);
     Navigator.pop(context);
   }
 
-  void updateNote() async{
-  //   if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
-  //     showSnackBar(
-  //         context, 'Title or content cannot be empty', Constants.redColor);
-  //     return;
-  //   }
-  //   UserProvider userProvider =
-  //       Provider.of<UserProvider>(context, listen: false);
-  //   User currentUser = userProvider.user;
+  void updateNote(){
+    if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+      showSnackBar(
+          context, 'Title or content cannot be empty', Constants.redColor);
+      return;
+    }
+    FocusScope.of(context).unfocus();
 
-  //   bool confirmUpdate = await showDialog(
-  //   context: context,
-  //   builder: (BuildContext context) {
-  //     return const CustomDialogBox(
-  //       title: "Update note",
-  //       content: "Are you sure you want to update this note?",
-  //       positiveButtonText: "Yes",
-  //       negativeButtonText: "No",
-  //     );
-  //   },
-  // );
 
-  // if (confirmUpdate == true) {
-  //   widget.note!.title = _titleController.text;
-  //   widget.note!.content = _contentController.text;
-  //   widget.note!.dateadded = DateTime.now();
-  //   // ignore: use_build_context_synchronously
-  //   Provider.of<NotesProvider>(context, listen: false).updateNote(context: context, note: widget.note!, user: currentUser );
-  //   // ignore: use_build_context_synchronously
-  //   Navigator.pop(context);
-  // }
-    
+    widget.note!.title = _titleController.text;
+    widget.note!.content = _contentController.text;
+    widget.note!.dateadded = DateTime.now();
+
+    showDialog(
+      context: context, 
+      builder: (context) => CustomDialogBox(
+        currentNote: widget.note,
+        currentUser: Provider.of<UserProvider>(context, listen: false).user,
+        title: "Update note", 
+        content: "Are you sure you want to update this note?", 
+        positiveButtonText: "Update", 
+        negativeButtonText: "Cancel"),).then((value) => Navigator.pop(context));
+
+
   }
+
 
   @override
   void initState() {
