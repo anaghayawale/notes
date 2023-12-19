@@ -1,10 +1,17 @@
 {
     "cSpell.words": [
         "ARGB",
+        "autofocus",
+        "Cupertino",
+        "dateadded",
         "dotenv",
+        "fullscreen",
+        "LTRB",
         "RGBO",
         "SIGNIN",
-        "signup"
+        "signup",
+        "unfocus",
+        "userid"
     ],
     "java.configuration.updateBuildConfiguration": "interactive"
 }

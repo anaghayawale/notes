@@ -34,13 +34,13 @@ void httpErrorHandle({
       onSuccess();
       break;
     case 400:
-      showSnackBar(context, jsonDecode(response.body)['message'], Colors.red);
+      showSnackBar(context, jsonDecode(response.body)['message'], Constants.redColor);
       break;
     case 500:
-      showSnackBar(context, jsonDecode(response.body)['error'], Colors.red);
+      showSnackBar(context, jsonDecode(response.body)['error'], Constants.redColor);
       break;
     default:
-      showSnackBar(context, jsonDecode(response.body)['message'], Colors.red);
+      showSnackBar(context, jsonDecode(response.body)['message'], Constants.redColor);
       break;
   }
 }

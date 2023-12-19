@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:notes/providers/loading_provider.dart';
+import 'package:notes/providers/notes_provider.dart';
 import 'package:notes/providers/user_provider.dart';
 import 'package:notes/screens/sign_in_screen.dart';
 import 'package:notes/utils/constants.dart';
@@ -8,12 +9,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   await dotenv.load(fileName: 'assets/.env');
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => UserProvider()),
-      ChangeNotifierProvider(create: (_) => LoadingProvider()),
-    ],
-    child: const MyApp()));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -21,7 +17,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => UserProvider()),
+      ChangeNotifierProvider(create: (context) => LoadingProvider()),
+      ChangeNotifierProvider(create: (context) => NotesProvider()),
+    ],
+    child:MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Constants.yellowColor,
@@ -34,7 +36,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const SignInScreen(),
+    )
     );
+
   }
 }
 
