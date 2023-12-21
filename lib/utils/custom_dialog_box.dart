@@ -7,13 +7,23 @@ import '../models/user.dart';
 import '../providers/notes_provider.dart';
 
 class CustomDialogBox extends StatefulWidget {
+  final String? currentNoteTitle;
+  final String? currentNoteContent;
   final Note? currentNote;
   final User? currentUser;
   final String title;
   final String content;
   final String positiveButtonText;
   final String negativeButtonText;
-  const CustomDialogBox({super.key, required this.title, required this.content, required this.positiveButtonText, required this.negativeButtonText, this.currentNote, this.currentUser});
+  
+  const CustomDialogBox(
+      {super.key,
+      required this.title,
+      required this.content,
+      required this.positiveButtonText,
+      required this.negativeButtonText,
+      this.currentNote,
+      this.currentUser, this.currentNoteTitle, this.currentNoteContent});
 
   @override
   State<CustomDialogBox> createState() => _CustomDialogBoxState();
@@ -66,10 +76,11 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                   ),
                   child: TextButton(
                     onPressed: () {
-                      if(widget.currentNote != null)
-                      {
+                      if (widget.currentNote != null) {
+                        
                         Navigator.pop(context);
                       } else {
+                        
                         Navigator.pop(context, false);
                       }
                     },
@@ -91,21 +102,21 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                   ),
                   child: TextButton(
                     onPressed: () {
-                      if(widget.currentNote != null)
-                      {
-                        if(widget.title == "Delete note")
-                        {
-                          notesProvider.deleteNote(note: widget.currentNote!, user: widget.currentUser!);
+                      if (widget.currentNote != null) {
+                        if (widget.title == "Delete note") {
+                          notesProvider.deleteNote(note: widget.currentNote!);
                           Navigator.pop(context);
-                        } else if(widget.title == "Update note"){
+                        } else if (widget.title == "Update note") {
+                          String userId = widget.currentUser!.id;
+                          widget.currentNote!.title = widget.currentNoteTitle!;
+                          widget.currentNote!.content = widget.currentNoteContent!;
                           notesProvider.updateNote(
                             note: widget.currentNote!,
-                            user: widget.currentUser!,
+                            userId: userId,
                           );
                           Navigator.pop(context);
                         }
-                      }
-                      else{
+                      } else {
                         Navigator.pop(context, true);
                       }
                     },

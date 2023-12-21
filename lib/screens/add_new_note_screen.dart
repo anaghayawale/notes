@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:notes/models/note.dart';
 import 'package:notes/providers/notes_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 import '../models/user.dart';
 import '../providers/user_provider.dart';
@@ -42,17 +41,15 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
     User currentUser = userProvider.user;
 
     Note newNote = Note(
-      id: const Uuid().v1(),
       userid: currentUser.id,
-      title: _titleController.text,
-      content: _contentController.text,
-      dateadded: DateTime.now(),
+      title: _titleController.text.trim(),
+      content: _contentController.text.trim(),
     );
-    Provider.of<NotesProvider>(context, listen: false).addNote(note: newNote, user: currentUser);
+    Provider.of<NotesProvider>(context, listen: false).addNote(note: newNote);
     Navigator.pop(context);
   }
 
-  void updateNote(){
+  void updateNote() {
     if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
       showSnackBar(
           context, 'Title or content cannot be empty', Constants.redColor);
@@ -60,31 +57,29 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
     }
     FocusScope.of(context).unfocus();
 
-
-    widget.note!.title = _titleController.text;
-    widget.note!.content = _contentController.text;
-    widget.note!.dateadded = DateTime.now();
-
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    User currentUser = userProvider.user;
     showDialog(
-      context: context, 
+      context: context,
       builder: (context) => CustomDialogBox(
-        currentNote: widget.note,
-        currentUser: Provider.of<UserProvider>(context, listen: false).user,
-        title: "Update note", 
-        content: "Are you sure you want to update this note?", 
-        positiveButtonText: "Update", 
-        negativeButtonText: "Cancel"),).then((value) => Navigator.pop(context));
-
-
+          currentNoteTitle: _titleController.text,
+          currentNoteContent: _contentController.text,
+          currentUser: currentUser,
+          currentNote: widget.note,
+          title: "Update note",
+          content: "Are you sure you want to update this note?",
+          positiveButtonText: "Update",
+          negativeButtonText: "Cancel"),
+    ).then((value) => Navigator.pop(context));
   }
-
 
   @override
   void initState() {
     super.initState();
     if (widget.isUpdating) {
-      _titleController.text = widget.note!.title!;
-      _contentController.text = widget.note!.content!;
+      _titleController.text = widget.note!.title;
+      _contentController.text = widget.note!.content;
     }
   }
 
