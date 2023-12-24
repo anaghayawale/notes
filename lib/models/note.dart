@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 class Note {
-  final String? id;
+  String? id;
   final String userid;
   String title;
   String content;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  bool? isSelected;
 
   Note({
     this.id,
@@ -15,10 +16,11 @@ class Note {
     required this.content,
     this.createdAt,
     this.updatedAt,
+    this.isSelected = false,
   });
 
   Map<String, dynamic> toMap() => {
-        "id": id,
+        "_id": id,
         "userid": userid,
         "title": title,
         "content": content,

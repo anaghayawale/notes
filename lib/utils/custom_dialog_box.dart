@@ -3,36 +3,69 @@ import 'package:notes/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import '../models/note.dart';
-import '../models/user.dart';
 import '../providers/notes_provider.dart';
 
+enum DialogType { deleteNotes, updateNote }
+
 class CustomDialogBox extends StatefulWidget {
-  final String? currentNoteTitle;
-  final String? currentNoteContent;
+  final DialogType dialogType;
+  final List<Note>? notes;
+  final String? updatedNoteTitle;
+  final String? updatedNoteContent;
   final Note? currentNote;
-  final User? currentUser;
   final String title;
   final String content;
-  final String positiveButtonText;
-  final String negativeButtonText;
-  
+  final String actionButtonText;
+
   const CustomDialogBox(
       {super.key,
       required this.title,
       required this.content,
-      required this.positiveButtonText,
-      required this.negativeButtonText,
+      required this.actionButtonText,
       this.currentNote,
-      this.currentUser, this.currentNoteTitle, this.currentNoteContent});
+      this.updatedNoteTitle,
+      this.updatedNoteContent,
+      this.notes,
+      required this.dialogType});
 
   @override
   State<CustomDialogBox> createState() => _CustomDialogBoxState();
 }
 
 class _CustomDialogBoxState extends State<CustomDialogBox> {
+  NotesProvider notesProvider = NotesProvider();
+
+  @override
+  void initState() {
+    super.initState();
+    notesProvider = Provider.of<NotesProvider>(context, listen: false);
+  }
+
+  void handleAction() {
+    switch (widget.dialogType) {
+      case DialogType.deleteNotes:
+        if (widget.notes != null) {
+          notesProvider.deleteSelectedNotes(notesToBeDeleted: widget.notes!);
+        }
+        break;
+      case DialogType.updateNote:
+        if (widget.currentNote != null &&
+            widget.updatedNoteTitle != null &&
+            widget.updatedNoteContent != null) {
+          widget.currentNote!.title = widget.updatedNoteTitle!;
+          widget.currentNote!.content = widget.updatedNoteContent!;
+
+          // notesProvider.updateNote(
+          //   note: widget.currentNote!,
+          // );
+        }
+        break;
+    }
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    NotesProvider notesProvider = Provider.of<NotesProvider>(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
@@ -45,6 +78,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            //title of the note
             Text(
               widget.title,
               style: TextStyle(
@@ -54,6 +88,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               ),
             ),
             const SizedBox(height: 10.0),
+            //description of the note
             Text(
               widget.content,
               textAlign: TextAlign.center,
@@ -64,70 +99,19 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               ),
             ),
             const SizedBox(height: 10.0),
+            //buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Container(
-                  width: 100.0,
-                  height: 40.0,
-                  decoration: BoxDecoration(
-                    color: Constants.whiteColor,
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      if (widget.currentNote != null) {
-                        
-                        Navigator.pop(context);
-                      } else {
-                        
-                        Navigator.pop(context, false);
-                      }
-                    },
-                    child: Text(
-                      widget.negativeButtonText,
-                      style: TextStyle(
-                        color: Constants.blackColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                _buildButtom(
+                  'Cancel',
+                  () => Navigator.pop(context),
+                  Constants.blackColor,
                 ),
-                Container(
-                  width: 100.0,
-                  height: 40.0,
-                  decoration: BoxDecoration(
-                    color: Constants.whiteColor,
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      if (widget.currentNote != null) {
-                        if (widget.title == "Delete note") {
-                          notesProvider.deleteNote(note: widget.currentNote!);
-                          Navigator.pop(context);
-                        } else if (widget.title == "Update note") {
-                          String userId = widget.currentUser!.id;
-                          widget.currentNote!.title = widget.currentNoteTitle!;
-                          widget.currentNote!.content = widget.currentNoteContent!;
-                          notesProvider.updateNote(
-                            note: widget.currentNote!,
-                            userId: userId,
-                          );
-                          Navigator.pop(context);
-                        }
-                      } else {
-                        Navigator.pop(context, true);
-                      }
-                    },
-                    child: Text(
-                      widget.positiveButtonText,
-                      style: TextStyle(
-                        color: Constants.redColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                _buildButtom(
+                  widget.actionButtonText,
+                  handleAction,
+                  Constants.redColor,
                 ),
               ],
             ),
@@ -136,4 +120,25 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
       ),
     );
   }
+}
+
+Widget _buildButtom(String text, VoidCallback onPressed, Color color) {
+  return Container(
+    width: 100.0,
+    height: 40.0,
+    decoration: BoxDecoration(
+      color: Constants.whiteColor,
+      borderRadius: BorderRadius.circular(20.0),
+    ),
+    child: TextButton(
+      onPressed: onPressed,
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+  );
 }

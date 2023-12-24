@@ -7,8 +7,6 @@ import 'package:notes/utils/custom_drawer.dart';
 import 'package:provider/provider.dart';
 
 import '../models/note.dart';
-import '../models/user.dart';
-import '../providers/user_provider.dart';
 import '../utils/custom_dialog_box.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,27 +20,79 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     NotesProvider notesProvider = Provider.of<NotesProvider>(context);
-    UserProvider userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
         backgroundColor: Constants.appBackgroundColor,
         appBar: AppBar(
           surfaceTintColor: Constants.yellowColor,
-          title: Text(
-            "Notes",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Constants.yellowColor,
-            ),
-          ),
+          title: (notesProvider.isSelectionMode == true)
+              ? (notesProvider.selectedNotes.isEmpty)
+                  ? Text("Select items",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Constants.yellowColor,
+                      ))
+                  : (notesProvider.selectedNotes.length > 1)
+                      ? Text(
+                          "${notesProvider.selectedNotes.length} items selected",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Constants.yellowColor,
+                          ))
+                      : Text(
+                          "${notesProvider.selectedNotes.length} item selected",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Constants.yellowColor,
+                          ))
+              : Text(
+                  "Notes",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Constants.yellowColor,
+                  ),
+                ),
           backgroundColor: Constants.appBackgroundColor,
+          actions: [
+            if (notesProvider.selectedNotes.isNotEmpty)
+              IconButton(
+                  onPressed: () {
+                    List<Note> selectedNotes = notesProvider.selectedNotes;
+
+                    showDialog(
+                        context: context,
+                        builder: (context) => CustomDialogBox(
+                              dialogType: DialogType.deleteNotes,
+                              notes: selectedNotes,
+                              title: "Delete notes",
+                              content: (notesProvider.selectedNotes.length > 1)
+                                  ? "Delete ${notesProvider.selectedNotes.length} items?"
+                                  : "Delete ${notesProvider.selectedNotes.length} item?",
+                              actionButtonText: "Delete",
+                            ));
+                  },
+                  icon: Icon(Icons.delete, color: Constants.yellowColor))
+          ],
           leading: Builder(
-            builder: (context) => IconButton(
-              icon: Icon(
-                Icons.menu,
-                color: Constants.yellowColor,
-              ),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            ),
+            builder: (context) {
+              if (notesProvider.isSelectionMode == true) {
+                return IconButton(
+                  onPressed: () {
+                    setState(() {
+                      notesProvider.isSelectionMode = false;
+                      notesProvider.clearSelection();
+                    });
+                  },
+                  icon: Icon(Icons.close, color: Constants.yellowColor),
+                );
+              } else {
+                return IconButton(
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  icon: Icon(Icons.menu, color: Constants.yellowColor),
+                );
+              }
+            },
           ),
         ),
         drawer: const CustomDrawer(),
@@ -59,36 +109,30 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemCount: notesProvider.notes.length,
                           itemBuilder: (context, index) {
                             Note currentNote = notesProvider.notes[index];
-                            User currentUser = userProvider.user;
-
+                            
                             return GestureDetector(
                               onTap: () {
                                 //Update note
-                                Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                    fullscreenDialog: true,
-                                    builder: (context) => AddNewNoteScreen(
-                                      isUpdating: true,
-                                      note: currentNote,
+                                print(currentNote.id);
+                                if (notesProvider.isSelectionMode == false) {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                      fullscreenDialog: true,
+                                      builder: (context) => AddNewNoteScreen(
+                                        isUpdating: true,
+                                        currentNote: currentNote,
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                }
                               },
                               onLongPress: () {
-                                //delete
-                                //notesProvider.deleteNote(currentNote);
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => CustomDialogBox(
-                                          currentUser: currentUser,
-                                          currentNote: currentNote,
-                                          title: "Delete note",
-                                          content:
-                                              "Are you sure you want to delete this note?",
-                                          negativeButtonText: "Cancel",
-                                          positiveButtonText: "Delete",
-                                        ));
+                                setState(() {
+                                  notesProvider.isSelectionMode = true;
+                                  currentNote.isSelected = true;
+                                  notesProvider.selectedNotes.add(currentNote);
+                                });
                               },
                               child: Container(
                                 height: 220.0,
@@ -101,37 +145,76 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Constants.whiteColor,
                                   borderRadius: BorderRadius.circular(20.0),
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      currentNote.title,
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.w600,
-                                        color: Constants.blackColor,
+                                child: Stack(children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        currentNote.title,
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.w600,
+                                          color: Constants.blackColor,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(
-                                      height: 7.0,
-                                    ),
-                                    Text(
-                                      currentNote.content,
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.w400,
-                                        color: Constants.greyTextColor,
+                                      const SizedBox(
+                                        height: 7.0,
                                       ),
-                                      maxLines: 5,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
-                                    )
-                                  ],
-                                ),
+                                      Text(
+                                        currentNote.content,
+                                        style: TextStyle(
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.w400,
+                                          color: Constants.greyTextColor,
+                                        ),
+                                        maxLines: 5,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(
+                                        height: 5.0,
+                                      ),
+                                    ],
+                                  ),
+                                  if (notesProvider.isSelectionMode == true)
+                                    Positioned(
+                                        bottom: 1,
+                                        right: 1,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    if (currentNote
+                                                            .isSelected ==
+                                                        true) {
+                                                      notesProvider
+                                                          .unSelectNotes(
+                                                              note:
+                                                                  currentNote);
+                                                    } else {
+                                                      notesProvider.selectNotes(
+                                                          note: currentNote);
+                                                    }
+                                                  });
+                                                },
+                                                child: (currentNote
+                                                            .isSelected ==
+                                                        true)
+                                                    ? Icon(Icons.check_circle,
+                                                        color: Constants
+                                                            .yellowColor)
+                                                    : Icon(
+                                                        Icons.circle_outlined,
+                                                        color: Constants
+                                                            .yellowColor)),
+                                          ],
+                                        ))
+                                ]),
                               ),
                             );
                           },

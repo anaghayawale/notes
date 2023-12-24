@@ -6,7 +6,7 @@ import 'package:notes/models/note.dart';
 import 'package:notes/utils/token_storage.dart';
 
 class ApiService {
-  void addNote({
+  Future<bool> addNote({
     required Note note,
   }) async {
     try {
@@ -23,29 +23,37 @@ class ApiService {
       var body = jsonDecode(res.body);
       if (body['success'] == true) {
         print(body['message']);
+        return true;
+      }else{
+        print(body['error']);
+        return false;
       }
     } catch (e) {
       print(e.toString());
+      return false;
     }
   }
 
-  void updateNote({required Note note, required String userId}) async {
+  void updateNote({required Note note}) async {
     try {
       String? token = await TokenStorage.retrieveToken();
       if (token == null) {
         throw Exception('Token not found');
       }
-      Note updatedNote = Note(
-        id: note.id,
-        userid: userId,
-        title: note.title,
-        content: note.content,
-      );
-      print(updatedNote.toJson());
+      print(jsonEncode({
+        "id": note.id,
+        "title": note.title,
+        "content": note.content,
+      }));
       Uri requestUri = Uri.parse(dotenv.env['NODE_API_POST_UPDATE']!);
-      http.Response res = await http.put(requestUri,
-          body: updatedNote.toJson(),
-          headers: <String, String>{
+      http.Response res =
+          await http.put(Uri.parse('http://192.168.1.100:5000/api/update'),
+              body: jsonEncode({
+                "id": note.id,
+                "title": note.title,
+                "content": note.content,
+              }),
+              headers: <String, String>{
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
           });
@@ -53,33 +61,39 @@ class ApiService {
       if (body['success'] == true) {
         print(body['message']);
       } else {
-        print('not updated');
+        print(body['error']);
       }
     } catch (e) {
       print(e.toString());
     }
   }
 
-  void deleteNote({
-    required Note note,
+  void deleteNotes({
+    required List<String?> ids,
   }) async {
     try {
       String? token = await TokenStorage.retrieveToken();
       if (token == null) {
         throw Exception('Token not found');
       }
+      String requestBody = '{"id": ${jsonEncode(ids)}}';
       Uri requestUri = Uri.parse(dotenv.env['NODE_API_POST_DELETE']!);
-      http.Response res = await http
-          .delete(requestUri, body: note.toJson(), headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      });
+      http.Response res = await http.delete(
+        requestUri,
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      );
       var body = jsonDecode(res.body);
       if (body['success'] == true) {
         print(body['message']);
+      } else {
+        print(body['error']);
       }
-    } catch (e) {
-      print(e.toString());
+    } catch (error) {
+      print('Error occurred: $error');
     }
   }
 

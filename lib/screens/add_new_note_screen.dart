@@ -11,8 +11,9 @@ import '../utils/utils.dart';
 
 class AddNewNoteScreen extends StatefulWidget {
   final bool isUpdating;
-  final Note? note;
-  const AddNewNoteScreen({super.key, required this.isUpdating, this.note});
+  final Note? currentNote;
+  const AddNewNoteScreen(
+      {super.key, required this.isUpdating, this.currentNote});
 
   @override
   State<AddNewNoteScreen> createState() => _AddNewNoteScreenState();
@@ -57,20 +58,18 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
     }
     FocusScope.of(context).unfocus();
 
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
-    User currentUser = userProvider.user;
+    print(widget.currentNote!.id);
     showDialog(
       context: context,
       builder: (context) => CustomDialogBox(
-          currentNoteTitle: _titleController.text,
-          currentNoteContent: _contentController.text,
-          currentUser: currentUser,
-          currentNote: widget.note,
-          title: "Update note",
-          content: "Are you sure you want to update this note?",
-          positiveButtonText: "Update",
-          negativeButtonText: "Cancel"),
+        dialogType: DialogType.updateNote,
+        updatedNoteTitle: _titleController.text,
+        updatedNoteContent: _contentController.text,
+        currentNote: widget.currentNote,
+        title: "Update note",
+        content: "Are you sure you want to update this note?",
+        actionButtonText: "Update",
+      ),
     ).then((value) => Navigator.pop(context));
   }
 
@@ -78,8 +77,8 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
   void initState() {
     super.initState();
     if (widget.isUpdating) {
-      _titleController.text = widget.note!.title;
-      _contentController.text = widget.note!.content;
+      _titleController.text = widget.currentNote!.title;
+      _contentController.text = widget.currentNote!.content;
     }
   }
 
