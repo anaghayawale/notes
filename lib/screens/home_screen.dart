@@ -109,11 +109,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemCount: notesProvider.notes.length,
                           itemBuilder: (context, index) {
                             Note currentNote = notesProvider.notes[index];
-                            
+
                             return GestureDetector(
                               onTap: () {
                                 //Update note
-                                print(currentNote.id);
                                 if (notesProvider.isSelectionMode == false) {
                                   Navigator.push(
                                     context,
@@ -135,6 +134,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 });
                               },
                               child: Container(
+                                //show a blur screen of adding note in progress above the note 
+                                //if the note is being added
+                                
+
                                 height: 220.0,
                                 width: 200.0,
                                 margin: const EdgeInsets.symmetric(

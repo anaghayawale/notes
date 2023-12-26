@@ -46,7 +46,7 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
       title: _titleController.text.trim(),
       content: _contentController.text.trim(),
     );
-    Provider.of<NotesProvider>(context, listen: false).addNote(note: newNote);
+    Provider.of<NotesProvider>(context, listen: false).addNoteOptimistically(note: newNote);
     Navigator.pop(context);
   }
 

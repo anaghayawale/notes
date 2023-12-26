@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:notes/services/api_services.dart';
 import '../models/note.dart';
 
@@ -46,16 +47,50 @@ class NotesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addNote({required Note note}) async {
-    bool result = await apiService.addNote(
-      note: note,
-    );
-    if (result) {
-      print(note.toJson());
-      notes.add(note);
+  void addNoteOptimistically({required Note note}) async {
+    // Optimistic update: Add the note to the list immediately
+    notes.add(note);
+    notifyListeners();
+
+    Note addedNote = await apiService.addNote(note: note);
+    print(addedNote.toJson());
+    if (addedNote.id == '') {
+      notes.remove(note);
       notifyListeners();
+      Fluttertoast.showToast(
+        msg: 'Failed to add note: Note not added',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } else {
+      print(addedNote.toJson());
+      int indexOfNote = notes.indexOf(note);
+      notes[indexOfNote] = addedNote;
+      notifyListeners();
+      Fluttertoast.showToast(
+        msg: 'Note Added successfully',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
     }
   }
+
+  // void addNote({required Note note}) async {
+  //   bool result = await apiService.addNote(
+  //     note: note,
+  //   );
+  //   if (result) {
+  //     print(note.toJson());
+  //     notes.add(note);
+  //     notifyListeners();
+  //   }
+  // }
 
   void updateNote({required Note note}) {
     int indexOfNote = notes.indexWhere((element) => element.id == note.id);

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -6,7 +7,7 @@ import 'package:notes/models/note.dart';
 import 'package:notes/utils/token_storage.dart';
 
 class ApiService {
-  Future<bool> addNote({
+  Future<Note> addNote({
     required Note note,
   }) async {
     try {
@@ -14,23 +15,38 @@ class ApiService {
       if (token == null) {
         throw Exception('Token not found');
       }
-      Uri requestUri = Uri.parse(dotenv.env['NODE_API_POST_ADD']!);
-      http.Response res = await http
-          .post(requestUri, body: note.toJson(), headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      });
+
+      //Uri requestUri = Uri.parse(dotenv.env['NODE_API_POST_ADD']!);
+      http.Response res = await http.post(
+          Uri.parse('http://192.168.1.100:5000/api/add'),
+          body: note.toJson(),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          }).timeout(const Duration(seconds: 10));
+
       var body = jsonDecode(res.body);
       if (body['success'] == true) {
-        print(body['message']);
-        return true;
-      }else{
+        print(body['data']['addedNote']);
+        return Note.fromMap(body['data']['addedNote']);
+      } else {
         print(body['error']);
-        return false;
+        return Note(id: '', userid: '', title: '', content: '');
       }
     } catch (e) {
-      print(e.toString());
-      return false;
+      if (e is TimeoutException) {
+        print('Connection timed out');
+        // Handle timeout, return a blank note
+        return Note(id: '', userid: '', title: '', content: '');
+      } else {
+        print(e.toString());
+        return Note(
+          id: '',
+          userid: '',
+          title: '',
+          content: '',
+        );
+      }
     }
   }
 
@@ -45,9 +61,9 @@ class ApiService {
         "title": note.title,
         "content": note.content,
       }));
-      Uri requestUri = Uri.parse(dotenv.env['NODE_API_POST_UPDATE']!);
+      //Uri requestUri = Uri.parse(dotenv.env['NODE_API_POST_UPDATE']!);
       http.Response res =
-          await http.put(Uri.parse('http://192.168.1.100:5000/api/update'),
+          await http.put(Uri.parse('http://192.168.1.113:5000/api/update'),
               body: jsonEncode({
                 "id": note.id,
                 "title": note.title,
