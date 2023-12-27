@@ -52,12 +52,17 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
         if (widget.currentNote != null &&
             widget.updatedNoteTitle != null &&
             widget.updatedNoteContent != null) {
+          Note oldNote = Note(
+            id: widget.currentNote!.id,
+            userid: widget.currentNote!.userid,
+            title: widget.currentNote!.title,
+            content: widget.currentNote!.content,
+          );
           widget.currentNote!.title = widget.updatedNoteTitle!;
           widget.currentNote!.content = widget.updatedNoteContent!;
 
-          // notesProvider.updateNote(
-          //   note: widget.currentNote!,
-          // );
+          notesProvider.updateNoteOptimistically(
+              note: widget.currentNote!, oldNote: oldNote);
         }
         break;
     }

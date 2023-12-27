@@ -46,7 +46,8 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
       title: _titleController.text.trim(),
       content: _contentController.text.trim(),
     );
-    Provider.of<NotesProvider>(context, listen: false).addNoteOptimistically(note: newNote);
+    Provider.of<NotesProvider>(context, listen: false)
+        .addNoteOptimistically(note: newNote);
     Navigator.pop(context);
   }
 
@@ -58,7 +59,7 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
     }
     FocusScope.of(context).unfocus();
 
-    print(widget.currentNote!.id);
+    print(widget.currentNote!.title);
     showDialog(
       context: context,
       builder: (context) => CustomDialogBox(

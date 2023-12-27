@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:glowy_borders/glowy_borders.dart';
 import 'package:notes/providers/notes_provider.dart';
 import 'package:notes/screens/add_new_note_screen.dart';
 import 'package:notes/utils/constants.dart';
@@ -17,6 +20,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final List<String> loadingQuotes = [
+    "Loading your notes...",
+    "Hang tight! Your notes are on the way.",
+    "Did you know? Patience is a virtue!",
+    // Add more quotes as needed
+  ];
+  String searchQuery = "";
+
   @override
   Widget build(BuildContext context) {
     NotesProvider notesProvider = Provider.of<NotesProvider>(context);
@@ -102,125 +113,194 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 5.0),
-                        child: GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2),
-                          itemCount: notesProvider.notes.length,
-                          itemBuilder: (context, index) {
-                            Note currentNote = notesProvider.notes[index];
-
-                            return GestureDetector(
-                              onTap: () {
-                                //Update note
-                                if (notesProvider.isSelectionMode == false) {
-                                  Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                      fullscreenDialog: true,
-                                      builder: (context) => AddNewNoteScreen(
-                                        isUpdating: true,
-                                        currentNote: currentNote,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                              onLongPress: () {
+                        child: ListView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: [
+                            TextField(
+                              onChanged: (value) {
                                 setState(() {
-                                  notesProvider.isSelectionMode = true;
-                                  currentNote.isSelected = true;
-                                  notesProvider.selectedNotes.add(currentNote);
+                                  searchQuery = value;
                                 });
                               },
-                              child: Container(
-                                //show a blur screen of adding note in progress above the note 
-                                //if the note is being added
-                                
-
-                                height: 220.0,
-                                width: 200.0,
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 5.0, vertical: 5.0),
-                                padding: const EdgeInsets.fromLTRB(
-                                    10.0, 12.0, 10.0, 12.0),
-                                decoration: BoxDecoration(
-                                  color: Constants.whiteColor,
-                                  borderRadius: BorderRadius.circular(20.0),
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Constants.greyColor,
+                                hintText: "Search",
+                                hintStyle: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w400,
+                                  color: Constants.greyTextColor,
                                 ),
-                                child: Stack(children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        currentNote.title,
-                                        style: TextStyle(
-                                          fontSize: 18.0,
-                                          fontWeight: FontWeight.w600,
-                                          color: Constants.blackColor,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(
-                                        height: 7.0,
-                                      ),
-                                      Text(
-                                        currentNote.content,
-                                        style: TextStyle(
-                                          fontSize: 14.0,
-                                          fontWeight: FontWeight.w400,
-                                          color: Constants.greyTextColor,
-                                        ),
-                                        maxLines: 5,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(
-                                        height: 5.0,
-                                      ),
-                                    ],
-                                  ),
-                                  if (notesProvider.isSelectionMode == true)
-                                    Positioned(
-                                        bottom: 1,
-                                        right: 1,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            InkWell(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (currentNote
-                                                            .isSelected ==
-                                                        true) {
-                                                      notesProvider
-                                                          .unSelectNotes(
-                                                              note:
-                                                                  currentNote);
-                                                    } else {
-                                                      notesProvider.selectNotes(
-                                                          note: currentNote);
-                                                    }
-                                                  });
-                                                },
-                                                child: (currentNote
-                                                            .isSelected ==
-                                                        true)
-                                                    ? Icon(Icons.check_circle,
-                                                        color: Constants
-                                                            .yellowColor)
-                                                    : Icon(
-                                                        Icons.circle_outlined,
-                                                        color: Constants
-                                                            .yellowColor)),
-                                          ],
-                                        ))
-                                ]),
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  color: Constants.yellowColor,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: BorderSide.none,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  borderSide: BorderSide.none,
+                                ),
                               ),
-                            );
-                          },
+                            ),
+                            const SizedBox(
+                              height: 10.0,
+                            ),
+                            GridView.builder(
+                              shrinkWrap: true,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2),
+                              itemCount: notesProvider
+                                  .getFilteredNotes(searchQuery)
+                                  .length,
+                              itemBuilder: (context, index) {
+                                Note currentNote = notesProvider
+                                    .getFilteredNotes(searchQuery)[index];
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    //Update note
+                                    if (notesProvider.isSelectionMode ==
+                                        false) {
+                                      Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                          fullscreenDialog: true,
+                                          builder: (context) =>
+                                              AddNewNoteScreen(
+                                            isUpdating: true,
+                                            currentNote: currentNote,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  onLongPress: () {
+                                    setState(() {
+                                      notesProvider.isSelectionMode = true;
+                                      currentNote.isSelected = true;
+                                      notesProvider.selectedNotes
+                                          .add(currentNote);
+                                    });
+                                  },
+                                  child: AnimatedGradientBorder(
+                                    gradientColors: [
+                                      Constants.whiteColor,
+                                      Constants.whiteColor,
+                                      Constants.whiteColor,
+                                      (currentNote.id == null &&
+                                              notesProvider.animatedBorder ==
+                                                  true)
+                                          ? Constants.yellowColor
+                                              .withOpacity(0.1)
+                                          : Constants.whiteColor,
+                                    ],
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderSize: 0.5,
+                                    glowSize: 0.5,
+                                    animationProgress:
+                                        (currentNote.id == null &&
+                                                notesProvider.animatedBorder ==
+                                                    true)
+                                            ? null
+                                            : 0.1,
+                                    child: Container(
+                                      height: 220.0,
+                                      width: 200.0,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 5.0, vertical: 5.0),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          10.0, 12.0, 10.0, 12.0),
+                                      decoration: BoxDecoration(
+                                        color: Constants.whiteColor,
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                      child: Stack(children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              currentNote.title,
+                                              style: TextStyle(
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.w600,
+                                                color: Constants.blackColor,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(
+                                              height: 7.0,
+                                            ),
+                                            Text(
+                                              currentNote.content,
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                fontWeight: FontWeight.w400,
+                                                color: Constants.greyTextColor,
+                                              ),
+                                              maxLines: 5,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(
+                                              height: 5.0,
+                                            ),
+                                          ],
+                                        ),
+                                        if (notesProvider.isSelectionMode ==
+                                            true)
+                                          Positioned(
+                                              bottom: 1,
+                                              right: 1,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  InkWell(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          if (currentNote
+                                                                  .isSelected ==
+                                                              true) {
+                                                            notesProvider
+                                                                .unSelectNotes(
+                                                                    note:
+                                                                        currentNote);
+                                                          } else {
+                                                            notesProvider
+                                                                .selectNotes(
+                                                                    note:
+                                                                        currentNote);
+                                                          }
+                                                        });
+                                                      },
+                                                      child: (currentNote
+                                                                  .isSelected ==
+                                                              true)
+                                                          ? Icon(
+                                                              Icons
+                                                                  .check_circle,
+                                                              color: Constants
+                                                                  .yellowColor)
+                                                          : Icon(
+                                                              Icons
+                                                                  .circle_outlined,
+                                                              color: Constants
+                                                                  .yellowColor)),
+                                                ],
+                                              ))
+                                      ]),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       )
                     : const Center(
@@ -234,8 +314,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ))
             : Center(
-                child: CircularProgressIndicator(
-                color: Constants.yellowColor,
+                child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    color: Constants.yellowColor,
+                  ),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                  Text(
+                    loadingQuotes[Random().nextInt(loadingQuotes.length)],
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w600,
+                      color: Constants.greyTextColor,
+                    ),
+                  ),
+                ],
               )),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Constants.yellowColor,
