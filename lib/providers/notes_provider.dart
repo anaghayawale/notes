@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:notes/services/api_services.dart';
 import 'package:notes/utils/constants.dart';
+import 'package:notes/components/cusotm_toast.dart';
 import '../models/note.dart';
 
 class NotesProvider with ChangeNotifier {
@@ -13,6 +13,7 @@ class NotesProvider with ChangeNotifier {
   bool isLoading = true;
   ApiService apiService = ApiService();
   bool animatedBorder = false;
+  String updatingNoteId = '';
 
   NotesProvider() {
     fetchNotes();
@@ -59,7 +60,6 @@ class NotesProvider with ChangeNotifier {
   }
 
   void addNoteOptimistically({required Note note}) async {
-    // Optimistic update: Add the note to the list immediately
     animatedBorder = true;
     notes.insert(0, note);
     notifyListeners();
@@ -69,24 +69,17 @@ class NotesProvider with ChangeNotifier {
       notes.remove(note);
       animatedBorder = false;
       notifyListeners();
-      Fluttertoast.showToast(
-          msg: 'Failed to add note',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Constants.yellowColor.withOpacity(0.2),
-          textColor: Constants.redColor,
-          fontSize: 18);
+      CustomToast(
+        message: 'Failed to Add Note',
+        textColor: Constants.redColor,
+      );
     } else {
       int indexOfNote = notes.indexOf(note);
       notes[indexOfNote] = addedNote;
       animatedBorder = false;
       notifyListeners();
-      Fluttertoast.showToast(
-        msg: 'Note Added successfully',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Constants.yellowColor.withOpacity(0.2),
+      CustomToast(
+        message: 'Note added successfully',
         textColor: Constants.greenColor,
       );
     }
@@ -96,36 +89,29 @@ class NotesProvider with ChangeNotifier {
       {required Note note, required Note oldNote}) async {
     int indexOfNote = notes.indexWhere((element) => element.id == note.id);
     notes[indexOfNote] = note;
+    animatedBorder = true;
+    updatingNoteId = note.id!;
     notifyListeners();
 
     bool isUpdated = await apiService.updateNote(note: note);
     if (!isUpdated) {
       notes[indexOfNote] = oldNote;
+      animatedBorder = false;
       notifyListeners();
-      Fluttertoast.showToast(
-          msg: 'Failed to update note',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Constants.yellowColor.withOpacity(0.2),
-          textColor: Constants.redColor,
-          fontSize: 18);
+      CustomToast(
+        message: 'Failed to Update Note',
+        textColor: Constants.redColor,
+      );
     } else {
-      Fluttertoast.showToast(
-        msg: 'Note updated successfully',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Constants.yellowColor.withOpacity(0.2),
+      animatedBorder = false;
+      notifyListeners();
+      CustomToast(
+        message: 'Note updated successfully',
         textColor: Constants.greenColor,
       );
     }
   }
 
-  // void updateNote({required Note note}) {
-  //   int indexOfNote = notes.indexWhere((element) => element.id == note.id);
-  //   notes[indexOfNote] = note;
-  //   notifyListeners();
-  //   apiService.updateNote(note: note);
-  // }
 
   void fetchNotes() async {
     notes = await apiService.fetchNotes();

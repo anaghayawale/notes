@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/loading_provider.dart';
 import '../services/auth_services.dart';
 import '../utils/constants.dart';
-import '../utils/custom_text_field.dart';
+import '../components/custom_text_field.dart';
 import '../utils/utils.dart';
 
 class SignInScreen extends StatefulWidget {

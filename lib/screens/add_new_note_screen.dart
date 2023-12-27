@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../models/user.dart';
 import '../providers/user_provider.dart';
 import '../utils/constants.dart';
-import '../utils/custom_dialog_box.dart';
+import '../components/custom_dialog_box.dart';
 import '../utils/utils.dart';
 
 class AddNewNoteScreen extends StatefulWidget {

@@ -6,11 +6,11 @@ import 'package:glowy_borders/glowy_borders.dart';
 import 'package:notes/providers/notes_provider.dart';
 import 'package:notes/screens/add_new_note_screen.dart';
 import 'package:notes/utils/constants.dart';
-import 'package:notes/utils/custom_drawer.dart';
+import 'package:notes/components/custom_drawer.dart';
 import 'package:provider/provider.dart';
 
 import '../models/note.dart';
-import '../utils/custom_dialog_box.dart';
+import '../components/custom_dialog_box.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -114,9 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 5.0),
                         child: ListView(
-                          physics: const NeverScrollableScrollPhysics(),
                           children: [
                             TextField(
+                              scrollPhysics:
+                                  const NeverScrollableScrollPhysics(),
                               onChanged: (value) {
                                 setState(() {
                                   searchQuery = value;
@@ -149,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 10.0,
                             ),
                             GridView.builder(
+                              physics: const BouncingScrollPhysics(),
                               shrinkWrap: true,
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
@@ -191,9 +193,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Constants.whiteColor,
                                       Constants.whiteColor,
                                       Constants.whiteColor,
-                                      (currentNote.id == null &&
-                                              notesProvider.animatedBorder ==
-                                                  true)
+                                      ((currentNote.id == null &&
+                                                  notesProvider.animatedBorder ==
+                                                      true) ||
+                                              (currentNote.id ==
+                                                      notesProvider
+                                                          .updatingNoteId &&
+                                                  notesProvider
+                                                          .animatedBorder ==
+                                                      true))
                                           ? Constants.yellowColor
                                               .withOpacity(0.1)
                                           : Constants.whiteColor,
@@ -201,12 +209,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                     borderRadius: BorderRadius.circular(20.0),
                                     borderSize: 0.5,
                                     glowSize: 0.5,
-                                    animationProgress:
-                                        (currentNote.id == null &&
+                                    animationProgress: ((currentNote.id ==
+                                                    null &&
                                                 notesProvider.animatedBorder ==
-                                                    true)
-                                            ? null
-                                            : 0.1,
+                                                    true) ||
+                                            (currentNote.id ==
+                                                    notesProvider
+                                                        .updatingNoteId &&
+                                                notesProvider.animatedBorder ==
+                                                    true))
+                                        ? null
+                                        : 0.1,
                                     child: Container(
                                       height: 220.0,
                                       width: 200.0,
