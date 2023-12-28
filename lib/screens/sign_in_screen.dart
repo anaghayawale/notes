@@ -61,23 +61,17 @@ class _SignInScreenState extends State<SignInScreen> {
             children: [
               Image.asset('assets/images/icon.png'),
               const SizedBox(height: 20),
-              const Text(
-                "Welcome to Notes!",
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black54,
-                ),
-              ),
+              Text("Welcome to Notes!",
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black54,
+                      )),
               const SizedBox(height: 20),
-              Text(
-                "Sign in to your account",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w400,
-                  color: Constants.greyTextColor,
-                ),
-              ),
+              Text("Sign in to your account",
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black54,
+                      )),
               const SizedBox(height: 14),
               CustomTextField(text: "Email", controller: _emailController),
               const SizedBox(height: 12),
@@ -102,14 +96,14 @@ class _SignInScreenState extends State<SignInScreen> {
                           color: Constants.whiteColor,
                         );
                       } else {
-                        return Text(
-                          "Sign In",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Constants.whiteColor,
-                          ),
-                        );
+                        return Text("Sign In",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ));
                       }
                     },
                   ),
@@ -119,14 +113,11 @@ class _SignInScreenState extends State<SignInScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "Don't have an account?",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Constants.greyTextColor,
-                    ),
-                  ),
+                  Text("Don't have an account?",
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black54,
+                          )),
                   const SizedBox(width: 4),
                   InkWell(
                     onTap: () {
@@ -137,14 +128,11 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       );
                     },
-                    child: Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Constants.yellowColor,
-                      ),
-                    ),
+                    child: Text("Sign Up",
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Constants.yellowColor,
+                            )),
                   ),
                 ],
               ),

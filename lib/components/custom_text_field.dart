@@ -12,9 +12,11 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
+  bool isPasswordVisible = false;
   @override
   Widget build(BuildContext context) {
     return TextField(
+      obscureText: widget.text == 'Password' ? !isPasswordVisible : false,
       controller: widget.controller,
       style: TextStyle(
         fontSize: 18.0,
@@ -22,6 +24,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
       ),
       cursorColor: Constants.yellowColor,
       decoration: InputDecoration(
+        suffixIcon: widget.text == 'Password'
+            ? IconButton(
+                onPressed: () {
+                  setState(() {
+                    isPasswordVisible = !isPasswordVisible;
+                  });
+                },
+                icon: Icon(
+                  isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                  color: Constants.greyTextColor,
+                ),
+              )
+            : null,
         labelText: widget.text,
         labelStyle: TextStyle(
           color: Constants.greyTextColor,

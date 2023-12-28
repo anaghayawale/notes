@@ -36,6 +36,24 @@ class MyApp extends StatelessWidget {
               selectionHandleColor: Constants.yellowColor,
             ),
             colorScheme: ColorScheme.fromSeed(seedColor: Constants.yellowColor),
+            fontFamily: 'RobotoSlab',
+            textTheme: const TextTheme(
+              titleLarge: TextStyle(
+                fontSize: 30,
+              ),
+              titleMedium: TextStyle(
+                fontSize: 20,
+              ),
+              titleSmall: TextStyle(
+                fontSize: 18,
+              ),
+              bodyLarge: TextStyle(
+                fontSize: 16,
+              ),
+              bodyMedium: TextStyle(
+                fontSize: 14,
+              ),
+            ),
             useMaterial3: true,
           ),
           home: const MyAppInitializer(),
@@ -64,7 +82,7 @@ class MyAppInitializer extends StatelessWidget {
               ),
             );
           } else {
-            if (snapshot.hasData) {
+            if (snapshot.hasData == false) {
               print(snapshot.hasData);
               return const SignInScreen();
             } else {
@@ -89,7 +107,10 @@ class MyAppInitializer extends StatelessWidget {
     try {
       String? token = await TokenStorage.retrieveToken();
       print('Retrieved Token: $token');
-      return token != null;
+      if (token == null) {
+        return false;
+      }
+      return true;
     } catch (e) {
       print('Error retrieving token: $e');
       return false;
