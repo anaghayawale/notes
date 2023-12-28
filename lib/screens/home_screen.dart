@@ -35,7 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Constants.appBackgroundColor,
         appBar: AppBar(
           surfaceTintColor: Constants.yellowColor,
-          title: (notesProvider.isSelectionMode == true)
+          title: (notesProvider.isSelectionMode == true &&
+                  notesProvider.notes.isNotEmpty)
               ? (notesProvider.selectedNotes.isEmpty)
                   ? Text("Select items",
                       style: TextStyle(
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Constants.yellowColor,
                           ))
               : Text(
-                  "Notes",
+                  "",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Constants.yellowColor,
@@ -193,12 +194,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Constants.whiteColor,
                                       Constants.whiteColor,
                                       Constants.whiteColor,
-                                      ((currentNote.id == null &&
-                                                  notesProvider.animatedBorder ==
-                                                      true) ||
-                                              (currentNote.id ==
+                                      ((currentNote.id ==
                                                       notesProvider
-                                                          .updatingNoteId &&
+                                                          .animatedNoteId &&
+                                                  notesProvider
+                                                          .animatedBorder ==
+                                                      true) ||
+                                              (notesProvider
+                                                      .animatedDeleteNoteIds
+                                                      .contains(currentNote
+                                                          .id) &&
                                                   notesProvider
                                                           .animatedBorder ==
                                                       true))
@@ -210,12 +215,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     borderSize: 0.5,
                                     glowSize: 0.5,
                                     animationProgress: ((currentNote.id ==
-                                                    null &&
+                                                    notesProvider
+                                                        .animatedNoteId &&
                                                 notesProvider.animatedBorder ==
                                                     true) ||
-                                            (currentNote.id ==
-                                                    notesProvider
-                                                        .updatingNoteId &&
+                                            (notesProvider.animatedDeleteNoteIds
+                                                    .contains(currentNote.id) &&
                                                 notesProvider.animatedBorder ==
                                                     true))
                                         ? null

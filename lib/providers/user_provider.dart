@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notes/utils/token_storage.dart';
 import '../models/user.dart';
 
 class UserProvider with ChangeNotifier {
@@ -13,6 +14,12 @@ class UserProvider with ChangeNotifier {
 
   void setUserFromModel(User user) {
     _user = user;
+    notifyListeners();
+  }
+
+  void logoutUser(){
+    TokenStorage.deleteToken();
+    _user = User(id: '', name: '', email: '', password: '', token: '');
     notifyListeners();
   }
 }

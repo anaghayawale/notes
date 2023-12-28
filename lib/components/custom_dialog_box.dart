@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:notes/providers/user_provider.dart';
 import 'package:notes/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import '../models/note.dart';
 import '../providers/notes_provider.dart';
 
-enum DialogType { deleteNotes, updateNote }
+enum DialogType { deleteNotes, updateNote, logout }
 
 class CustomDialogBox extends StatefulWidget {
   final DialogType dialogType;
@@ -45,7 +46,8 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
     switch (widget.dialogType) {
       case DialogType.deleteNotes:
         if (widget.notes != null) {
-          notesProvider.deleteSelectedNotes(notesToBeDeleted: widget.notes!);
+          notesProvider.deleteSelectedNotesOptimistically(
+              notesToBeDeleted: widget.notes!);
         }
         break;
       case DialogType.updateNote:
@@ -65,12 +67,17 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               note: widget.currentNote!, oldNote: oldNote);
         }
         break;
+      case DialogType.logout:
+          Provider.of<UserProvider>(context, listen: false).logoutUser();
+        break;
+
     }
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),

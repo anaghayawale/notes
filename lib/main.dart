@@ -9,9 +9,9 @@ import 'package:notes/utils/constants.dart';
 import 'package:notes/utils/token_storage.dart';
 import 'package:provider/provider.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: 'assets/.env');
+  dotenv.load(fileName: 'assets/.env');
   runApp(const MyApp());
 }
 
@@ -49,27 +49,50 @@ class MyAppInitializer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      // Check for the presence of a token
       future: _checkForToken(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          // Navigate to the appropriate screen based on the token
-          return snapshot.hasData ? const HomeScreen() : const SignInScreen();
+          if (snapshot.hasError) {
+            print('Error: ${snapshot.error}');
+            // Handle the error appropriately, e.g., show an error message.
+            return Scaffold(
+              body: Center(
+                child: Text(
+                  'Error: ${snapshot.error}',
+                  style: TextStyle(color: Constants.redColor),
+                ),
+              ),
+            );
+          } else {
+            if (snapshot.hasData) {
+              print(snapshot.hasData);
+              return const SignInScreen();
+            } else {
+              print(snapshot.hasData);
+              return const HomeScreen();
+            }
+          }
         } else {
-          // Placeholder widget while checking for the token
           return Scaffold(
-            body: Center(child: CircularProgressIndicator(
-              color: Constants.yellowColor,
-            )),
+            body: Center(
+              child: CircularProgressIndicator(
+                color: Constants.yellowColor,
+              ),
+            ),
           );
         }
       },
     );
   }
 
-  // Function to check for the presence of a token
   Future<bool> _checkForToken() async {
-    String? token = await TokenStorage.retrieveToken();
-    return token != null;
+    try {
+      String? token = await TokenStorage.retrieveToken();
+      print('Retrieved Token: $token');
+      return token != null;
+    } catch (e) {
+      print('Error retrieving token: $e');
+      return false;
+    }
   }
 }

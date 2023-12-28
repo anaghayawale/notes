@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:notes/components/custom_dialog_box.dart';
+import 'package:notes/screens/sign_in_screen.dart';
 import 'package:notes/utils/constants.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -9,6 +11,21 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
+  void logoutUser() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const CustomDialogBox(
+          title: 'Logout',
+          content: 'Are you sure you want to logout?',
+          actionButtonText: 'Logout',
+          dialogType: DialogType.logout,
+        );
+      },
+    ).then((value) => Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (context) => const SignInScreen())));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -34,7 +51,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 fontWeight: FontWeight.w400,
                 color: Constants.yellowColor,
               )),
-          onTap: () {},
+          onTap: logoutUser,
         ),
       ],
     ));

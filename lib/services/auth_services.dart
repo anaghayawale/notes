@@ -14,6 +14,7 @@ import '../utils/constants.dart';
 import '../utils/utils.dart';
 
 class AuthServices {
+  String requestUri = dotenv.env['NODE_API_POST']!;
   //method to sign up user
   void signUpUser({
     required BuildContext context,
@@ -25,8 +26,7 @@ class AuthServices {
       User user =
           User(id: '', name: name, email: email, password: password, token: '');
 
-      http.Response res = await http.post(
-          Uri.parse(dotenv.env['NODE_API_POST_SIGNUP']!),
+      http.Response res = await http.post(Uri.parse('$requestUri/api/signup'),
           body: user.toJson(),
           headers: <String, String>{'Content-Type': 'application/json'});
 
@@ -58,8 +58,7 @@ class AuthServices {
       final User user =
           User(id: '', name: '', email: email, password: password, token: '');
 
-      http.Response res = await http.post(
-          Uri.parse(dotenv.env['NODE_API_POST_SIGNIN']!),
+      http.Response res = await http.post(Uri.parse('$requestUri/api/signin'),
           body: user.toJson(),
           headers: <String, String>{'Content-Type': 'application/json'});
 

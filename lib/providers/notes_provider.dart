@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:notes/services/api_services.dart';
 import 'package:notes/utils/constants.dart';
-import 'package:notes/components/cusotm_toast.dart';
+import 'package:notes/components/custom_toast.dart';
 import '../models/note.dart';
 
 class NotesProvider with ChangeNotifier {
@@ -13,7 +11,8 @@ class NotesProvider with ChangeNotifier {
   bool isLoading = true;
   ApiService apiService = ApiService();
   bool animatedBorder = false;
-  String updatingNoteId = '';
+  String? animatedNoteId = '';
+  List<String?> animatedDeleteNoteIds = [];
 
   NotesProvider() {
     fetchNotes();
@@ -48,19 +47,9 @@ class NotesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteSelectedNotes({required List<Note> notesToBeDeleted}) {
-    List<String?> ids = notesToBeDeleted.map((e) => e.id).toList();
-    print(jsonEncode(ids));
-    apiService.deleteNotes(ids: ids);
-    for (var note in notesToBeDeleted) {
-      notes.remove(note);
-    }
-    selectedNotes.clear();
-    notifyListeners();
-  }
-
   void addNoteOptimistically({required Note note}) async {
     animatedBorder = true;
+    animatedNoteId = note.id;
     notes.insert(0, note);
     notifyListeners();
 
@@ -68,8 +57,9 @@ class NotesProvider with ChangeNotifier {
     if (addedNote.id == '') {
       notes.remove(note);
       animatedBorder = false;
+      animatedNoteId = '';
       notifyListeners();
-      CustomToast(
+      CustomToast.showToast(
         message: 'Failed to Add Note',
         textColor: Constants.redColor,
       );
@@ -77,8 +67,9 @@ class NotesProvider with ChangeNotifier {
       int indexOfNote = notes.indexOf(note);
       notes[indexOfNote] = addedNote;
       animatedBorder = false;
+      animatedNoteId = '';
       notifyListeners();
-      CustomToast(
+      CustomToast.showToast(
         message: 'Note added successfully',
         textColor: Constants.greenColor,
       );
@@ -87,31 +78,68 @@ class NotesProvider with ChangeNotifier {
 
   void updateNoteOptimistically(
       {required Note note, required Note oldNote}) async {
+    animatedBorder = true;
+    animatedNoteId = note.id!;
     int indexOfNote = notes.indexWhere((element) => element.id == note.id);
     notes[indexOfNote] = note;
-    animatedBorder = true;
-    updatingNoteId = note.id!;
     notifyListeners();
 
     bool isUpdated = await apiService.updateNote(note: note);
     if (!isUpdated) {
       notes[indexOfNote] = oldNote;
       animatedBorder = false;
+      animatedNoteId = '';
       notifyListeners();
-      CustomToast(
+      CustomToast.showToast(
         message: 'Failed to Update Note',
         textColor: Constants.redColor,
       );
     } else {
       animatedBorder = false;
+      animatedNoteId = '';
       notifyListeners();
-      CustomToast(
+      CustomToast.showToast(
         message: 'Note updated successfully',
         textColor: Constants.greenColor,
       );
     }
   }
 
+  void deleteSelectedNotesOptimistically(
+      {required List<Note> notesToBeDeleted}) async {
+    List<String?> ids = notesToBeDeleted.map((e) => e.id).toList();
+    for (var note in notesToBeDeleted) {
+      notes.remove(note);
+    }
+    animatedBorder = true;
+    animatedDeleteNoteIds = ids;
+    selectedNotes.clear();
+    if (notes.isEmpty) {
+      isSelectionMode = false;
+    }
+    notifyListeners();
+
+    bool isDeleted = await apiService.deleteNotes(ids: ids);
+    if (!isDeleted) {
+      for (var note in notesToBeDeleted) {
+        notes.add(note);
+      }
+      animatedBorder = false;
+      animatedDeleteNoteIds = [];
+      notifyListeners();
+      CustomToast.showToast(
+        message: 'Failed to Delete Notes',
+        textColor: Constants.redColor,
+      );
+    } else {
+      animatedBorder = false;
+      animatedDeleteNoteIds = [];
+      CustomToast.showToast(
+        message: 'Notes deleted successfully',
+        textColor: Constants.greenColor,
+      );
+    }
+  }
 
   void fetchNotes() async {
     notes = await apiService.fetchNotes();

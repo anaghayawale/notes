@@ -77,7 +77,7 @@ class ApiService {
     }
   }
 
-  void deleteNotes({
+  Future<bool> deleteNotes({
     required List<String?> ids,
   }) async {
     try {
@@ -96,13 +96,16 @@ class ApiService {
         body: requestBody,
       );
       var body = jsonDecode(res.body);
-      if (body['success'] == true) {
+      if (body['success']) {
         print(body['message']);
+        return true;
       } else {
         print(body['error']);
+        return false;
       }
     } catch (error) {
       print('Error occurred: $error');
+      return false;
     }
   }
 
@@ -125,7 +128,7 @@ class ApiService {
         }
         return notes;
       } else {
-        throw Exception('Error fetching notes');
+        return [];
       }
     } catch (e) {
       print(e.toString());
