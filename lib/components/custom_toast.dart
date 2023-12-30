@@ -12,7 +12,7 @@ class CustomToast {
       textColor: textColor,
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
-      backgroundColor: Constants.yellowColor.withOpacity(0.1),
+      backgroundColor: Constants.blackColor.withOpacity(0.1),
       fontSize: 16.0,
     );
   }

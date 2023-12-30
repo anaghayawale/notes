@@ -29,12 +29,13 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           Icons.search,
           color: Constants.blackColor,
         ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(50.0),
+          borderRadius: BorderRadius.circular(15.0),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(50.0),
+          borderRadius: BorderRadius.circular(15.0),
           borderSide: BorderSide.none,
         ),
       ),

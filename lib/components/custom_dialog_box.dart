@@ -68,22 +68,20 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
         }
         break;
       case DialogType.logout:
-          Provider.of<UserProvider>(context, listen: false).logoutUser();
+        Provider.of<UserProvider>(context, listen: false).logoutUser();
         break;
-
     }
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
       ),
       backgroundColor: Constants.noteCardBackgroundColor,
-      surfaceTintColor: Constants.yellowColor,
+      surfaceTintColor: Constants.blackColor,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
         height: 200.0,

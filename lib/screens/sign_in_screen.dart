@@ -51,7 +51,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Constants.appBackgroundColor,
+      backgroundColor: Constants.whiteColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -64,7 +64,7 @@ class _SignInScreenState extends State<SignInScreen> {
               Text("Welcome to Notes!",
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Colors.black54,
+                        color: Colors.black87,
                       )),
               const SizedBox(height: 20),
               Text("Sign in to your account",
@@ -85,7 +85,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 height: 60,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
-                  color: Constants.yellowColor,
+                  color: Constants.blackColor,
                 ),
                 child: TextButton(
                   onPressed: signInUser,
@@ -131,7 +131,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Text("Sign Up",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: Constants.yellowColor,
+                              color: Constants.blackColor,
                             )),
                   ),
                 ],

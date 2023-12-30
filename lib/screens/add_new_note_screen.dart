@@ -87,20 +87,20 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        surfaceTintColor: Constants.yellowColor,
+        surfaceTintColor: Constants.blackColor,
         actions: [
           if (widget.isUpdating)
             IconButton(
               onPressed: () {},
-              icon: Icon(Icons.ios_share, color: Constants.yellowColor),
+              icon: Icon(Icons.ios_share, color: Constants.blackColor),
             ),
           IconButton(
             onPressed: () async {
               widget.isUpdating ? updateNote() : addNewNote();
             },
             icon: widget.isUpdating
-                ? Icon(Icons.edit, color: Constants.yellowColor)
-                : Icon(Icons.check, color: Constants.yellowColor),
+                ? Icon(Icons.edit, color: Constants.greenColor)
+                : Icon(Icons.check, color: Constants.greenColor),
           ),
         ],
       ),
@@ -121,7 +121,7 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
                   fontSize: 30.0,
                   fontWeight: FontWeight.w400,
                 ),
-                cursorColor: Constants.yellowColor,
+                cursorColor: Constants.blackColor,
                 decoration: const InputDecoration(
                   hintText: "Title",
                   border: InputBorder.none,
@@ -129,7 +129,7 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
               ),
               Divider(
                 thickness: 1.0,
-                color: Constants.yellowColor,
+                color: Constants.blackColor,
               ),
               Expanded(
                 child: TextField(
@@ -139,7 +139,7 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
                   style: const TextStyle(
                     fontSize: 20.0,
                   ),
-                  cursorColor: Constants.yellowColor,
+                  cursorColor: Constants.blackColor,
                   decoration: const InputDecoration(
                     hintText: "Start typing...",
                     border: InputBorder.none,

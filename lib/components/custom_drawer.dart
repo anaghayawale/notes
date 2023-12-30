@@ -33,7 +33,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       children: [
         DrawerHeader(
           decoration: BoxDecoration(
-            color: Constants.yellowColor,
+            color: Constants.blackColor,
           ),
           child: Icon(
             Icons.account_circle,
@@ -44,12 +44,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
         ListTile(
           leading: Icon(
             Icons.logout,
-            color: Constants.yellowColor,
+            color: Constants.blackColor,
           ),
           title: Text('Logout',
               style: TextStyle(
                 fontWeight: FontWeight.w400,
-                color: Constants.yellowColor,
+                color: Constants.blackColor,
               )),
           onTap: logoutUser,
         ),

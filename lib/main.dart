@@ -31,11 +31,11 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primaryColor: Constants.yellowColor,
             textSelectionTheme: TextSelectionThemeData(
-              cursorColor: Constants.yellowColor,
-              selectionColor: Constants.yellowColor.withOpacity(0.5),
-              selectionHandleColor: Constants.yellowColor,
+              cursorColor: Constants.blackColor,
+              selectionColor: Constants.blackColor.withOpacity(0.5),
+              selectionHandleColor: Constants.blackColor,
             ),
-            colorScheme: ColorScheme.fromSeed(seedColor: Constants.yellowColor),
+            colorScheme: ColorScheme.fromSeed(seedColor: Constants.blackColor),
             fontFamily: 'RobotoSlab',
             textTheme: const TextTheme(
               titleLarge: TextStyle(

@@ -22,7 +22,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         fontSize: 18.0,
         color: Constants.greyTextColor,
       ),
-      cursorColor: Constants.yellowColor,
+      cursorColor: Constants.blackColor,
       decoration: InputDecoration(
         suffixIcon: widget.text == 'Password'
             ? IconButton(
@@ -47,7 +47,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide(
-            color: Constants.yellowColor,
+            color: Constants.blackColor,
           ),
         ),
         focusedBorder: OutlineInputBorder(
