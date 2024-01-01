@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:notes/models/note.dart';
 import 'package:notes/providers/notes_provider.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   FocusNode noteFocus = FocusNode();
+  String typing = "";
 
   @override
   void dispose() {
@@ -74,6 +76,28 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
     ).then((value) => Navigator.pop(context));
   }
 
+  void shareNote() {
+    if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+      showSnackBar(
+          context, 'Title or content cannot be empty', Constants.redColor);
+      return;
+    }
+    FocusScope.of(context).unfocus();
+
+    showDialog(
+      context: context,
+      builder: (context) => CustomDialogBox(
+        dialogType: DialogType.shareNote,
+        updatedNoteTitle: _titleController.text,
+        updatedNoteContent: _contentController.text,
+        currentNote: widget.currentNote,
+        title: "Share note",
+        content: "",
+        actionButtonText: "Share",
+      ),
+    ).then((value) => Navigator.pop(context));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -89,11 +113,17 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
       appBar: AppBar(
         surfaceTintColor: Constants.blackColor,
         actions: [
-          if (widget.isUpdating)
+          if (widget.isUpdating &&
+              (_titleController.text.trim().isNotEmpty ||
+                  _contentController.text.trim().isNotEmpty))
             IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.ios_share, color: Constants.blackColor),
-            ),
+                onPressed: () {
+                  shareNote();
+                },
+                icon: (_titleController.text.isNotEmpty ||
+                        _contentController.text.isNotEmpty)
+                    ? Icon(Icons.ios_share, color: Constants.blackColor)
+                    : Icon(Icons.ios_share, color: Constants.greyColor)),
           IconButton(
             onPressed: () async {
               widget.isUpdating ? updateNote() : addNewNote();
@@ -127,10 +157,39 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
                   border: InputBorder.none,
                 ),
               ),
-              Divider(
-                thickness: 1.0,
-                color: Constants.blackColor,
+              // Divider(
+              //   thickness: 1.0,
+              //   color: Constants.blackColor,
+              // ),
+              //display date and time and characters
+              const SizedBox(height: 10.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    (widget.isUpdating == true)
+                        ? (widget.currentNote!.updatedAt != null)
+                            ? DateFormat('d MMMM h:mm a')
+                                .format(widget.currentNote!.updatedAt!)
+                            : DateFormat('d MMMM h:mm a')
+                                .format(widget.currentNote!.createdAt!)
+                        : DateFormat('d MMMM h:mm a').format(DateTime.now()),
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  const SizedBox(width: 5.0),
+                  Text(
+                    "| ${_contentController.text.length} characters",
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  )
+                ],
               ),
+              const SizedBox(height: 10.0),
               Expanded(
                 child: TextField(
                   controller: _contentController,

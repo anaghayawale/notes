@@ -1,13 +1,19 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:notes/models/note.dart';
+import 'package:share_plus/share_plus.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
 
 void showSnackBar(BuildContext context, String message, Color color) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text(message, style: TextStyle(color: color),textAlign: TextAlign.center,),
+      content: Text(
+        message,
+        style: TextStyle(color: color),
+        textAlign: TextAlign.center,
+      ),
       duration: const Duration(seconds: 3),
       backgroundColor: Constants.greyColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
@@ -19,29 +25,36 @@ void showSnackBar(BuildContext context, String message, Color color) {
 }
 
 bool isValidEmail(String email) {
-  RegExp emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+  RegExp emailRegex =
+      RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
   return emailRegex.hasMatch(email);
 }
 
-void httpErrorHandle({
-  required BuildContext context,
-  required http.Response response,
-  required VoidCallback onSuccess
-}){
-
-  switch(response.statusCode){
+void httpErrorHandle(
+    {required BuildContext context,
+    required http.Response response,
+    required VoidCallback onSuccess}) {
+  switch (response.statusCode) {
     case 200:
       onSuccess();
       break;
     case 400:
-      showSnackBar(context, jsonDecode(response.body)['error'], Constants.redColor);
+      showSnackBar(
+          context, jsonDecode(response.body)['error'], Constants.redColor);
       break;
     case 500:
-      showSnackBar(context, jsonDecode(response.body)['error'], Constants.redColor);
+      showSnackBar(
+          context, jsonDecode(response.body)['error'], Constants.redColor);
       break;
     default:
-      showSnackBar(context, jsonDecode(response.body)['error'], Constants.redColor);
+      showSnackBar(
+          context, jsonDecode(response.body)['error'], Constants.redColor);
       break;
   }
 }
 
+void shareNoteAsText({required Note note}) {
+  String noteText = '${note.title}\n${note.content}';
+  print(noteText);
+  Share.share(noteText);
+}

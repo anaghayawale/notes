@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:notes/providers/user_provider.dart';
 import 'package:notes/utils/constants.dart';
+import 'package:notes/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 import '../models/note.dart';
 import '../providers/notes_provider.dart';
 
-enum DialogType { deleteNotes, updateNote, logout }
+enum DialogType { deleteNotes, updateNote, logout, shareNote }
 
 class CustomDialogBox extends StatefulWidget {
   final DialogType dialogType;
@@ -67,6 +68,8 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
               note: widget.currentNote!, oldNote: oldNote);
         }
         break;
+      case DialogType.shareNote:
+        break;
       case DialogType.logout:
         Provider.of<UserProvider>(context, listen: false).logoutUser();
         break;
@@ -83,32 +86,63 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
       backgroundColor: Constants.noteCardBackgroundColor,
       surfaceTintColor: Constants.blackColor,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
         height: 200.0,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //title of the note
-            Text(
-              widget.title,
-              style: TextStyle(
-                color: Constants.blackColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 18.0,
+            Center(
+              child: Text(
+                widget.title,
+                style: TextStyle(
+                  color: Constants.blackColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.0,
+                ),
               ),
             ),
             const SizedBox(height: 10.0),
             //description of the note
-            Text(
-              widget.content,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Constants.greyTextColor,
-                fontWeight: FontWeight.w400,
-                fontSize: 16.0,
+            if (widget.dialogType != DialogType.shareNote)
+              Text(
+                widget.content,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Constants.greyTextColor,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16.0,
+                ),
               ),
-            ),
             const SizedBox(height: 10.0),
+            if (widget.dialogType == DialogType.shareNote)
+              InkWell(
+                onTap: () {
+                  shareNoteAsText(note: widget.currentNote!);
+                },
+                child: Text(
+                  'Share note as text',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Constants.greyTextColor,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16.0,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 10.0),
+            if (widget.dialogType == DialogType.shareNote)
+              Text(
+                'Share note as picture',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Constants.greyTextColor,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16.0,
+                ),
+              ),
+            const SizedBox(height: 20.0),
             //buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -118,11 +152,12 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                   () => Navigator.pop(context),
                   Constants.blackColor,
                 ),
-                _buildButtom(
-                  widget.actionButtonText,
-                  handleAction,
-                  Constants.redColor,
-                ),
+                if (widget.dialogType != DialogType.shareNote)
+                  _buildButtom(
+                    widget.actionButtonText,
+                    handleAction,
+                    Constants.redColor,
+                  ),
               ],
             ),
           ],

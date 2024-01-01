@@ -66,7 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.asset('assets/images/icon.png'),
+                Image.asset('assets/images/icon2.png'),
                 const SizedBox(height: 20),
                 Text(
                   "Welcome to Notes!",
@@ -140,11 +140,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       },
                       child: Text(
                         "Sign In",
-                        style:
-                            Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Constants.blackColor,
-                                ),
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Constants.blackColor,
+                            ),
                       ),
                     ),
                   ],

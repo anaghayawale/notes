@@ -59,7 +59,7 @@ class _SignInScreenState extends State<SignInScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset('assets/images/icon.png'),
+              Image.asset('assets/images/icon2.png'),
               const SizedBox(height: 20),
               Text("Welcome to Notes!",
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(

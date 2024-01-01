@@ -109,8 +109,9 @@ class MyAppInitializer extends StatelessWidget {
       print('Retrieved Token: $token');
       if (token == null) {
         return false;
+      } else {
+        return true;
       }
-      return true;
     } catch (e) {
       print('Error retrieving token: $e');
       return false;
