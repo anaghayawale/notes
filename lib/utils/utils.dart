@@ -55,6 +55,6 @@ void httpErrorHandle(
 
 void shareNoteAsText({required Note note}) {
   String noteText = '${note.title}\n${note.content}';
-  print(noteText);
+  (noteText);
   Share.share(noteText);
 }

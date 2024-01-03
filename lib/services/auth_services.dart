@@ -83,7 +83,7 @@ class AuthServices {
                 (route) => false);
           });
     } catch (e) {
-      print(e);
+      (e);
       showSnackBar(context, e.toString(), Constants.redColor);
     } finally {
       Provider.of<LoadingProvider>(context, listen: false).stopLoading();

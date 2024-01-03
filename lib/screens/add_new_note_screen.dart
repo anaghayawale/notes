@@ -61,7 +61,7 @@ class _AddNewNoteScreenState extends State<AddNewNoteScreen> {
     }
     FocusScope.of(context).unfocus();
 
-    print(widget.currentNote!.title);
+    (widget.currentNote!.title);
     showDialog(
       context: context,
       builder: (context) => CustomDialogBox(

@@ -27,10 +27,10 @@ class ApiService {
 
       var body = jsonDecode(res.body);
       if (body['success'] == true) {
-        print(body['message']);
+        (body['message']);
         return Note.fromMap(body['data']['addedNote']);
       } else {
-        print(body['error']);
+        (body['error']);
         return Note(id: '', userid: '', title: '', content: '');
       }
     } catch (e) {
@@ -65,14 +65,14 @@ class ApiService {
           });
       var body = jsonDecode(res.body);
       if (body['success']) {
-        print(body['message']);
+        (body['message']);
         return true;
       } else {
-        print(body['error']);
+        (body['error']);
         return false;
       }
     } catch (e) {
-      print(e.toString());
+      (e.toString());
       return false;
     }
   }
@@ -97,14 +97,14 @@ class ApiService {
       );
       var body = jsonDecode(res.body);
       if (body['success']) {
-        print(body['message']);
+        (body['message']);
         return true;
       } else {
-        print(body['error']);
+        (body['error']);
         return false;
       }
     } catch (error) {
-      print('Error occurred: $error');
+      ('Error occurred: $error');
       return false;
     }
   }
@@ -131,7 +131,7 @@ class ApiService {
         return [];
       }
     } catch (e) {
-      print(e.toString());
+      (e.toString());
       return [];
     }
   }

@@ -8,7 +8,7 @@ class TokenStorage {
     try {
       return await _storage.read(key: _tokenKey);
     } catch (e) {
-      print('Error retrieving token: $e');
+      ('Error retrieving token: $e');
       return null;
     }
   }
@@ -17,7 +17,7 @@ class TokenStorage {
     try {
       await _storage.write(key: _tokenKey, value: token);
     } catch (e) {
-      print('Error saving token: $e');
+      ('Error saving token: $e');
     }
   }
 
@@ -25,7 +25,7 @@ class TokenStorage {
     try {
       await _storage.delete(key: _tokenKey);
     } catch (e) {
-      print('Error deleting token: $e');
+      ('Error deleting token: $e');
     }
   }
 }

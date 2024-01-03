@@ -71,7 +71,7 @@ class MyAppInitializer extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
-            print('Error: ${snapshot.error}');
+            ('Error: ${snapshot.error}');
             // Handle the error appropriately, e.g., show an error message.
             return Scaffold(
               body: Center(
@@ -83,10 +83,10 @@ class MyAppInitializer extends StatelessWidget {
             );
           } else {
             if (snapshot.hasData == false) {
-              print(snapshot.hasData);
+              (snapshot.hasData);
               return const SignInScreen();
             } else {
-              print(snapshot.hasData);
+              (snapshot.hasData);
               return const HomeScreen();
             }
           }
@@ -106,14 +106,14 @@ class MyAppInitializer extends StatelessWidget {
   Future<bool> _checkForToken() async {
     try {
       String? token = await TokenStorage.retrieveToken();
-      print('Retrieved Token: $token');
+      ('Retrieved Token: $token');
       if (token == null) {
         return false;
       } else {
         return true;
       }
     } catch (e) {
-      print('Error retrieving token: $e');
+      ('Error retrieving token: $e');
       return false;
     }
   }
